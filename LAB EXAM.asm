@@ -1,0 +1,124 @@
+.MODEL SMALL
+.STACK 100H
+.DATA
+    M1 DB 'ENTER 1ST INPUT: $'
+    M2 DB 10,13,'ENTER 2ND INPUT: $'
+    M3 DB 10,13,'THIS IS ONE DIZIT NUMBER $'
+    M4 DB 10,13,'INVALID INPUT... TRY AGAIN!! $' 
+    M5 DB 10,13,'THIS IS TWO DIZIT NUMBER $'
+    M6 DB 10,13,'THIS IS ADDITION $'
+    M7 DB 10,13,'THIS IS SUBSTRUCTION $'
+    M8 DB 10,13,'THE NEW NUMBER IS: $'
+ 
+.CODE
+MAIN PROC 
+    MOV AX, @DATA
+    MOV DS, AX
+    INPUT:
+    MOV AH, 9
+    LEA DX, M1
+    INT 21H
+ 
+    MOV AH, 1
+    INT 21H
+    MOV BH, AL
+    CMP BH, 30H
+    JL ERR
+    CMP BH, 39H
+    JLE OKAY
+    JMP ERR
+    OKAY: 
+    MOV AH, 9
+    LEA DX, M2
+    INT 21H
+ 
+    MOV AH, 1
+    INT 21H
+    MOV BL, AL
+    CMP BL, 30H
+    JL ERR
+    CMP BL, 39H
+    JLE COMPARE
+ 
+    
+    MOV AH, 9
+    LEA DX, M4
+    INT 21H 
+    MOV AH,2
+    MOV DL,10
+    INT 21H
+    MOV DL,13
+    INT 21H
+    JMP OKAY 
+    COMPARE:
+    CMP BH, BL
+    JL ADDITION
+    CMP BH, BL
+    JGE SUBSTRUCTION
+    ADDITION:
+    ADD BH, BL
+    SUB BH, 30H
+    MOV AH,2
+    MOV DL,10
+    INT 21H
+    MOV DL,13
+    INT 21H
+    MOV AH, 9
+    LEA DX, M8
+    INT 21H
+    MOV AH, 2
+    MOV DL, BH
+    INT 21H
+    MOV AH, 9
+    LEA DX, M6
+    INT 21H
+    CMP BH, 39H
+    JLE DIZIT_1
+    JG DIZIT_2
+    SUBSTRUCTION:
+    SUB BH,BL
+    ADD BH, 30H 
+    MOV AH,2
+    MOV DL,10
+    INT 21H
+    MOV DL,13
+    INT 21H
+    MOV AH, 9
+    LEA DX, M8
+    INT 21H
+    MOV AH, 2
+    MOV DL, BH
+    INT 21H
+    MOV AH, 9
+    LEA DX, M7
+    INT 21H
+    CMP BH, 39H
+    JLE DIZIT_1
+    JG DIZIT_2
+    DIZIT_1:
+    MOV AH, 9
+    LEA DX, M3
+    INT 21H
+    JMP EXIT
+
+    DIZIT_2:
+    MOV AH, 9
+    LEA DX, M5
+    INT 21H
+    JMP EXIT
+
+    ERR:
+    MOV AH, 9
+    LEA DX, M4
+    INT 21H 
+    MOV AH,2
+    MOV DL,10
+    INT 21H
+    MOV DL,13
+    INT 21H
+    JMP INPUT 
+    EXIT:
+    MOV AH, 4CH
+    INT 21H
+MAIN ENDP
+END MAIN
